@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "free-batch.fullname" . }}-service
+  name: {{ include "free-batch.fullname" . }}-frontend
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "free-batch.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.frontend.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: {{ .Values.frontend.containerPort }}
       protocol: TCP
-      name: http
+      name: {{ .Values.frontend.service.portName }}
   selector:
     app: {{ include "free-batch.name" . }}-frontend

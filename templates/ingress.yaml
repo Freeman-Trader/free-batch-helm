@@ -1,24 +1,22 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "free-batch.fullname" . }}-ingress
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "free-batch.labels" . | nindent 4 }}
+  name: {{ include "free-batch.fullname" . }}-frontend-ingress
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
 spec:
-  ingressClassName: {{ .Values.ingress.className }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            pathType: {{ .pathType }}
-            backend:
-              service:
-                name: {{ include "free-batch.fullname" $ }}-service
-                port:
-                  number: {{ $.Values.service.port }}
-          {{- end }}
+  {{- range .Values.ingress.hosts }}
+  - host: {{ .host }}
+    http:
+      paths:
+      {{- range .paths }}
+      - path: {{ .path }}
+        pathType: {{ .pathType }}
+      {{- end }}
     {{- end }}
+        backend:
+          service:
+            name: {{ include "free-batch.fullname" . }}-frontend
+            port:
+              number: {{ .Values.frontend.service.port }}

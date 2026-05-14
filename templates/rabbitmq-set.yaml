@@ -16,6 +16,7 @@ spec:
       labels:
         app: {{ include "free-batch.name" . }}-rabbitmq
     spec:
+      restartPolicy: {{ .Values.rabbitmq.restartPolicy }}
       containers:
         - name: rabbitmq
           image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"

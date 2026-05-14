@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ include "free-batch.name" . }}-frontend
     spec:
+      restartPolicy: {{ .Values.frontend.restartPolicy }}
       containers:
         - name: frontend
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
@@ -22,28 +23,14 @@ spec:
           ports:
             - containerPort: {{ .Values.frontend.containerPort }}
               name: http
+          env:
+            - name: DB_HOST
+              value: {{ include "free-batch.fullname" . }}-mysql
+            - name: RABBITMQ_HOST
+              value: {{ include "free-batch.fullname" . }}-rabbitmq
           envFrom:
             - secretRef:
                 name: {{ include "free-batch.fullname" . }}-secret
             - configMapRef:
                 name: {{ include "free-batch.fullname" . }}-config
-          {{- with .Values.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
-      volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+

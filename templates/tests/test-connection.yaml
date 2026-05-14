@@ -12,5 +12,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "free-batch.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "free-batch.fullname" . }}:{{ .Values.frontend.service.port }}']
   restartPolicy: Never

@@ -1,0 +1,38 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: {{ include "free-batch.fullname" . }}-backend-scaler
+  namespace: {{ .Release.Namespace }}
+spec:
+  jobTargetRef:
+    # This must match your Job template exactly
+    template:
+      spec:
+        containers:
+          - name: backend
+            image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+            env:
+              - name: DB_HOST
+                value: {{ include "free-batch.fullname" . }}-mysql
+              - name: RABBITMQ_HOST
+                value: {{ include "free-batch.fullname" . }}-rabbitmq
+            envFrom:
+              - secretRef:
+                  name: {{ include "free-batch.fullname" . }}-secret
+              - configMapRef:
+                  name: {{ include "free-batch.fullname" . }}-config
+        restartPolicy: Never
+  
+  # Scaling Strategy
+  pollingInterval: 5  # How often to check RabbitMQ (seconds)
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  maxReplicaCount: 100 # Maximum number of jobs to run at once
+
+  triggers:
+    - type: rabbitmq
+      metadata:
+        queueName: {{ .Values.rabbitmq.queue }}
+        mode: QueueLength
+        value: "1"                 # Spawn 1 job for every 1 message
+        host: amqp://guest:guest@{{ include "free-batch.fullname" . }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:5672/
