@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "free-batch.fullname" . }}-mysql
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "free-batch.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "free-batch.fullname" . }}-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "free-batch.name" . }}-mysql
+  template:
+    metadata:
+      labels:
+        app: {{ include "free-batch.name" . }}-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
+          imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.mysql.containerPort }}
+              name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "free-batch.fullname" . }}-secret
+                  key: DB_PASSWORD
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mysql.name }}
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

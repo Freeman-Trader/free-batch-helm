@@ -1,0 +1,57 @@
+backend:
+  image:
+    repository: "ghcr.io/freeman-trader/free-batch-backend"
+    tag: "main"
+    pullPolicy: Always
+  runOnce: true
+
+frontend:
+  replicas: 1
+  image:
+    repository: "ghcr.io/freeman-trader/free-batch-frontend"
+    tag: "main"
+    pullPolicy: Always
+  containerPort: 8080
+  flaskHost: "0.0.0.0"
+  flaskPort: 5000
+  flaskDebug: false
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+mysql:
+  host: "localhost"
+  port: 3306
+  user: "root"
+  name: "jobs"
+  image:
+    repository: mysql
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+  containerPort: 3306
+
+rabbitmq:
+  host: "localhost"
+  port: 5672
+  queue: "job-queue"
+  image:
+    repository: bitnami/rabbitmq
+    tag: "3.12"
+    pullPolicy: IfNotPresent
+  containerPort: 5672
+  managementPort: 15672
+
+secret:
+  dbPassword: "Test123"
+
+ingress:
+  className: "nginx"
+  hosts: 
+    - host: "free-batch.local"
+      paths:
+      - path: /
+        pathType: Prefix
+  tls: []
+  

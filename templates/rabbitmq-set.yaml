@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "free-batch.fullname" . }}-rabbitmq
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "free-batch.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "free-batch.fullname" . }}-rabbitmq
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "free-batch.name" . }}-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: {{ include "free-batch.name" . }}-rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
+          imagePullPolicy: {{ .Values.rabbitmq.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.rabbitmq.containerPort }}
+              name: amqp
+            - containerPort: {{ .Values.rabbitmq.managementPort }}
+              name: management
