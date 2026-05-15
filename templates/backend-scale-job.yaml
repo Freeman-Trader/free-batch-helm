@@ -5,7 +5,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   jobTargetRef:
-    # This must match your Job template exactly
     template:
       spec:
         containers:
@@ -23,16 +22,15 @@ spec:
                   name: {{ include "free-batch.fullname" . }}-config
         restartPolicy: Never
   
-  # Scaling Strategy
-  pollingInterval: 5  # How often to check RabbitMQ (seconds)
-  successfulJobsHistoryLimit: 5
-  failedJobsHistoryLimit: 5
-  maxReplicaCount: 100 # Maximum number of jobs to run at once
+  pollingInterval: {{ .Values.backend.pollingInterval }}
+  successfulJobsHistoryLimit: {{ .Values.backend.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backend.failedJobsHistoryLimit }}
+  maxReplicaCount: {{ .Values.backend.maxReplicaCount }}
 
   triggers:
     - type: rabbitmq
       metadata:
         queueName: {{ .Values.rabbitmq.queue }}
-        mode: QueueLength
-        value: "1"                 # Spawn 1 job for every 1 message
-        host: amqp://guest:guest@{{ include "free-batch.fullname" . }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:5672/
+        mode: {{ .Values.backend.triggers.mode }}
+        value: {{ .Values.backend.triggers.value | quote }}
+        host: amqp://guest:guest@{{ include "free-batch.fullname" . }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.rabbitmq.service.amqpPort }}/

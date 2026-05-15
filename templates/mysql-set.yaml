@@ -33,13 +33,13 @@ spec:
             - name: MYSQL_DATABASE
               value: {{ .Values.mysql.name }}
           volumeMounts:
-            - name: mysql-data
-              mountPath: /var/lib/mysql
+            - name: {{ .Values.mysql.volume.name }}
+              mountPath: {{ .Values.mysql.volume.mountPath }}
   volumeClaimTemplates:
     - metadata:
-        name: mysql-data
+        name: {{ .Values.mysql.volume.name }}
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: {{ .Values.mysql.volume.accessModes | toYaml | nindent 10 }}
         resources:
           requests:
-            storage: 1Gi
+            storage: {{ .Values.mysql.volume.storage }}

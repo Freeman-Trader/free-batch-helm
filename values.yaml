@@ -3,6 +3,14 @@ backend:
     repository: "ghcr.io/freeman-trader/free-batch-backend"
     tag: "main"
     pullPolicy: Always
+  restartPolicy: Never
+  pollingInterval: 5
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  maxReplicaCount: 100
+  triggers:
+    mode: QueueLength
+    value: "1"
   runOnce: true
 
 frontend:
@@ -34,6 +42,11 @@ mysql:
     type: ClusterIP
     port: 3306
     portName: mysql
+  volume:
+    storage: 1Gi
+    name: mysql-data
+    mountPath: /var/lib/mysql
+    accessModes: ["ReadWriteOnce"]
 
 rabbitmq:
   host: "localhost"
