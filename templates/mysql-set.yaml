@@ -16,6 +16,8 @@ spec:
       labels:
         app: {{ include "free-batch.name" . }}-mysql
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       restartPolicy: {{ .Values.mysql.restartPolicy }}
       containers:
         - name: mysql

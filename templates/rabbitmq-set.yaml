@@ -16,6 +16,8 @@ spec:
       labels:
         app: {{ include "free-batch.name" . }}-rabbitmq
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       restartPolicy: {{ .Values.rabbitmq.restartPolicy }}
       containers:
         - name: rabbitmq
