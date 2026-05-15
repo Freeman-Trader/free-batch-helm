@@ -29,7 +29,6 @@ frontend:
     portName: http
 
 mysql:
-  host: "localhost"
   containerPort: 3306
   user: "root"
   name: "jobs"
@@ -49,10 +48,12 @@ mysql:
     accessModes: ["ReadWriteOnce"]
 
 rabbitmq:
-  host: "localhost"
   containerPort: 5672
   managementPort: 15672
   queue: "job-queue"
+  auth:
+    user: guest
+    password: guest
   image:
     repository: rabbitmq
     tag: "4.3.0-management-alpine"

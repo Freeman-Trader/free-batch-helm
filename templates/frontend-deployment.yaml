@@ -23,11 +23,6 @@ spec:
           ports:
             - containerPort: {{ .Values.frontend.containerPort }}
               name: http
-          env:
-            - name: DB_HOST
-              value: {{ include "free-batch.fullname" . }}-mysql
-            - name: RABBITMQ_HOST
-              value: {{ include "free-batch.fullname" . }}-rabbitmq
           envFrom:
             - secretRef:
                 name: {{ include "free-batch.fullname" . }}-secret

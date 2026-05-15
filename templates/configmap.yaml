@@ -6,12 +6,12 @@ metadata:
   labels:
     {{- include "free-batch.labels" . | nindent 4 }}
 data:
-  DB_HOST: {{ .Values.mysql.host }}
+  DB_HOST: {{ include "free-batch.fullname" . }}-mysql
   DB_PORT: {{ .Values.mysql.containerPort | quote }}
   DB_USER: {{ .Values.mysql.user }}
   DB_NAME: {{ .Values.mysql.name }}
 
-  RABBITMQ_HOST: {{ .Values.rabbitmq.host }}
+  RABBITMQ_HOST: {{ include "free-batch.fullname" . }}-rabbitmq
   RABBITMQ_PORT: {{ .Values.rabbitmq.containerPort | quote }}
   RABBITMQ_QUEUE: {{ .Values.rabbitmq.queue }}
 

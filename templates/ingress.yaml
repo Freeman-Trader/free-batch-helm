@@ -12,10 +12,10 @@ spec:
       {{- range .paths }}
       - path: {{ .path }}
         pathType: {{ .pathType }}
-      {{- end }}
-    {{- end }}
         backend:
           service:
-            name: {{ include "free-batch.fullname" . }}-frontend
+            name: {{ include "free-batch.fullname" $ }}-frontend
             port:
-              number: {{ .Values.frontend.service.port }}
+              number: {{ $.Values.frontend.service.port }}
+      {{- end }}
+    {{- end }}

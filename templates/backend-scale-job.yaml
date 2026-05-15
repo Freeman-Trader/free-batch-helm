@@ -10,11 +10,6 @@ spec:
         containers:
           - name: backend
             image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
-            env:
-              - name: DB_HOST
-                value: {{ include "free-batch.fullname" . }}-mysql
-              - name: RABBITMQ_HOST
-                value: {{ include "free-batch.fullname" . }}-rabbitmq
             envFrom:
               - secretRef:
                   name: {{ include "free-batch.fullname" . }}-secret
@@ -33,4 +28,4 @@ spec:
         queueName: {{ .Values.rabbitmq.queue }}
         mode: {{ .Values.backend.triggers.mode }}
         value: {{ .Values.backend.triggers.value | quote }}
-        host: amqp://guest:guest@{{ include "free-batch.fullname" . }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.rabbitmq.service.amqpPort }}/
+        host: amqp://{{ .Values.rabbitmq.auth.user }}:{{ .Values.rabbitmq.auth.password }}@{{ include "free-batch.fullname" . }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.rabbitmq.service.amqpPort }}/
